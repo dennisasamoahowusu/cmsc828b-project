@@ -1,57 +1,63 @@
-matt_run_num=2
-#prep data for en to each language using just the 1 best translation
+#$ -S /bin/bash -V
+#$ -cwd
+#$  -q gpu.q@@2080 -q gpu.q   -l gpu=2,h_rt=999:99:99
+#$ -j y -o /exp/hkhayrallah/duolingo_sharedtask_2020/expts/en-ja/matt_lc.2+duo_9x1best_and_all_0.1dropout_200epochs_0.0005lr/$JOB_NAME.o$JOB_ID
+
+module load cuda10.1/toolkit
+module load cudnn/7.6.3_cuda10.1   # latest is cudnn/7.6.4_cuda10.1, not on our system yet
+
+#source activate /home/hltcoe/bthompson/anaconda3/envs/bigdata
+source activate /home/hltcoe/mpost/.conda/envs/fairseq
+
+nvidia-smi
+
+hostname
+printf -v DATE '%(%Y-%m-%d-%H-%M-%S)T\n' -1
+echo 
+fairseq=/exp/mpost/duo20/runs/tape4nmt/out/.packages/fairseq/fb76dac1c4e314db75f9d7a03cb4871c532000cb/
+#fairseq=/exp/bthompson/wikimatrix/fairseq/fairseq_cli/
 #fairseq=/home/hltcoe/hkhayrallah/fairseq-para-b_dist_multi_pp-orig
-fairseq=/exp/mpost/duo20/runs/tape4nmt/out/.packages/fairseq/fb76dac1c4e314db75f9d7a03cb4871c532000cb
-for lang in  ja ko  ; do
+cd 
+pwd
+#git rev-parse HEAD
+cd -
 
-src=en
-trg=$lang
-src_spm_model=/exp/mpost/duo20/runs/models/${trg}.$matt_run_num/subword.src.model
-trg_spm_model=/exp/mpost/duo20/runs/models/${trg}.$matt_run_num/subword.trg.model
+stdbuf -o0 -e0  python $fairseq/train.py /exp/hkhayrallah/duolingo_sharedtask_2020/data/processed/matt2/4k/duo/en-ja/9x1best_and_all \
+  --restore-file /exp/mpost/duo20/runs/models/ja.2/checkpoint_best.pt \
+  --fp16 --patience 10 \
+  --memory-efficient-fp16 \
+  --num-workers 0 \
+  --source-lang en \
+  --target-lang ja \
+  --save-dir /exp/hkhayrallah/duolingo_sharedtask_2020/expts/en-ja/matt_lc.2+duo_9x1best_and_all_0.1dropout_200epochs_0.0005lr \
+  --seed 2 \
+  --arch transformer \
+  --share-decoder-input-output-embed \
+  --encoder-layers 6 \
+  --decoder-layers 6 \
+  --encoder-embed-dim 512 \
+  --decoder-embed-dim 512 \
+  --encoder-ffn-embed-dim 2048 \
+  --decoder-ffn-embed-dim 2048 \
+  --encoder-attention-heads 8 \
+  --decoder-attention-heads 8 \
+  --dropout 0.1 \
+  --attention-dropout 0.1 \
+  --relu-dropout 0.1 \
+  --weight-decay 0.0 \
+  --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
+  --optimizer adam --adam-betas '(0.9, 0.98)' \
+  --clip-norm 0.0 \
+  --lr-scheduler inverse_sqrt \
+  --warmup-updates 4000 \
+  --warmup-init-lr 1e-7 --lr 0.0005 --min-lr 1e-9 \
+  --max-tokens 8000 \
+  --max-epoch 200 \
+  --update-freq 10 \
+  --ddp-backend=no_c10d \
+  --no-epoch-checkpoints \
+  --log-format json --log-interval 1  &> /exp/hkhayrallah/duolingo_sharedtask_2020/expts/en-ja/matt_lc.2+duo_9x1best_and_all_0.1dropout_200epochs_0.0005lr/train.log
 
-
-
-source activate  /home/hltcoe/hkhayrallah/.conda/envs/duolingo-2020
-
-  for split in train test0 test1 test2; do
-    
-
-    databin_lang=/exp/hkhayrallah/duolingo_sharedtask_2020/data/processed/matt$matt_run_num/4k/duo/$src-$trg/1best
-    data_links_lang=$databin_lang/links
-    mkdir -p $data_links_lang
-
-    raw_data_path=/exp/hkhayrallah/duolingo_sharedtask_2020/data/staple-2020-train/en_$lang/
-    infile=$raw_data_path/split.${split}.en_${lang}.2020-01-13.gold.lc.txt
-    src_out=$data_links_lang/${split}.raw.$src
-    trg_out=$data_links_lang/${split}.raw.$trg
-
-
-
-    
-    #get out of the shared task format and in to bitext. using prefix test means that you only get the 1best
-    python /exp/hkhayrallah/duolingo_sharedtask_2020/task_scripts/duolingo-sharedtask-2020/get_traintest_data.py   --fname $infile  --srcfname $src_out --tgtfname $trg_out --prefix test
-
-#Apply BPE
-
-~mpost/local/bin/spm_encode --model  $src_spm_model --output $data_links_lang/${split}.sp.$src $data_links_lang/${split}.raw.$src --alpha 0.5 --output_format=sample_piece
-
-~mpost/local/bin/spm_encode --model  $trg_spm_model --output $data_links_lang/${split}.sp.$trg $data_links_lang/${split}.raw.$trg --alpha 0.5 --output_format=sample_piece
-
-
-
-done
-    
-python $fairseq/preprocess.py --source-lang $src --target-lang $trg  \
- --trainpref $data_links_lang/train.sp \
- --validpref $data_links_lang/test0.sp \
- --testpref  $data_links_lang/test1.sp,$data_links_lang/test2.sp \
- --workers 30 \
- --tgtdict /exp/mpost/duo20/runs/models/${trg}.$matt_run_num/dict.${trg}.txt  \
- --srcdict /exp/mpost/duo20/runs/models/${trg}.$matt_run_num/dict.${src}.txt  \
- --destdir $databin_lang    
-
-  done
-
-
-
-
+  printf -v DATE '%(%Y-%m-%d-%H-%M-%S)T\n' -1
+  qsub /exp/hkhayrallah/duolingo_sharedtask_2020/expts/en-ja/matt_lc.2+duo_9x1best_and_all_0.1dropout_200epochs_0.0005lr/test.qsub
+  echo    

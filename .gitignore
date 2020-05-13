@@ -1,0 +1,7 @@
+dataverse_files*
+ja.2*
+venv
+data
+__pycache__
+.idea
+.DS_Store

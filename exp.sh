@@ -3,7 +3,8 @@
 ### Variables
 SRC_LANG=en
 TGT_LANG=ja
-BASE_DIR=/Users/dennis/coding/cmsc828b-project
+BASE_DIR=${1:-/Users/dennis/coding/cmsc828b-project}
+OWN_ENV=${2:-false}
 DUO_DATA_DIR=$BASE_DIR/dataverse_files/staple-2020-train
 DUO_EN_JA_FILE=$BASE_DIR/dataverse_files/staple-2020-train/en_ja/train.en_ja.2020-01-13.gold.txt
 SRC_SPM_MODEL_FILE=$BASE_DIR/ja.2/subword.$SRC_LANG.model
@@ -22,7 +23,7 @@ train_tgt=$data_dir/train_sents.$TGT_LANG
 
 ### Creating and activating virtual environment
 project_venv=$BASE_DIR/venv
-if [ ! -d "${project_venv}" ]; then
+if [ ! -d "${project_venv}" ] && [ $OWN_ENV = "false" ]; then
   mkdir -p $project_venv
   virtualenv -p python3 $project_venv
   source $project_venv/bin/activate
@@ -31,7 +32,12 @@ if [ ! -d "${project_venv}" ]; then
   pip install -r $BASE_DIR/requirements.txt
   deactivate
 fi
-source $project_venv/bin/activate
+
+if [ $OWN_ENV = "true" ]; then
+  source activate fairseq
+else
+  source $project_venv/bin/activate
+fi
 
 ### Transforming duolingo data to bitext
 ### Creating train and test splits from duolingo data
@@ -50,7 +56,7 @@ if [ ! -f $train_tgt ]; then
 
     echo "Converting train split to bitext ...."
     train_split=$data_dir/en_ja_split.train
-    python get_traintest_data.py --fname $train_split --srcfname $train_src --tgtfname $train_tgt
+    python get_traintest_data.py --fname $train_split --srcfname $train_src --tgtfname $train_tgt --prefix train
     echo "train src file: ${train_src}"
     head -n 2 $train_src
     echo "train tgt file: ${train_tgt}"

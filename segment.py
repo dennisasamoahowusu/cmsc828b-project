@@ -10,7 +10,7 @@ def segment(model_path: str, input: str) -> None:
         contents = [x.strip("\n") for x in f.readlines()]
 
     for content in contents:
-        pieces = sp.encode_as_pieces(content)
+        pieces = sp.sample_encode_as_pieces(content, -1, 0.5)
         pieces_str = ""
         for piece in pieces:
             pieces_str += piece + " "

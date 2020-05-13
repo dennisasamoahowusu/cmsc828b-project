@@ -8,15 +8,17 @@ DUO_DATA_DIR=$BASE_DIR/dataverse_files/staple-2020-train
 DUO_EN_JA_FILE=$BASE_DIR/dataverse_files/staple-2020-train/en_ja/train.en_ja.2020-01-13.gold.txt
 SRC_SPM_MODEL_FILE=$BASE_DIR/ja.2/subword.$SRC_LANG.model
 TGT_SPM_MODEL_FILE=$BASE_DIR/ja.2/subword.$TGT_LANG.model
+SRC_DICT=$BASE_DIR/ja.2/dict.en.txt
+TGT_DICT=$BASE_DIR/ja.2/dict.ja.txt
 
 data_dir=$BASE_DIR/data
 mkdir -p $data_dir
 
+models_dir=$BASE_DIR/models
+mkdir -p $models_dir
+
 train_src=$data_dir/train_sents.$SRC_LANG
 train_tgt=$data_dir/train_sents.$TGT_LANG
-
-train_src_bpe=$train_src.bpe
-train_tgt_bpe=$train_tgt.bpe
 
 ### Creating and activating virtual environment
 project_venv=$BASE_DIR/venv
@@ -70,44 +72,45 @@ fi
 #TODO
 
 ### Running bpe using sentence piece
-# TODO Confirm that bpe is happening correctly. Do we need alpha=0.5?
-if [ ! -f $train_tgt_bpe ]; then
-    echo "Running bpe on train src and target ...."
-    python segment.py --model $SRC_SPM_MODEL_FILE --input $train_src > $train_src_bpe
-    python segment.py --model $TGT_SPM_MODEL_FILE --input $train_tgt > $train_tgt_bpe
+if [ ! -f $train_tgt.sp.$TGT_LANG ]; then
+    echo "Running sp on train src and target ...."
+    python segment.py --model $SRC_SPM_MODEL_FILE --input $train_src > $train_src-$TGT_LANG.sp.$SRC_LANG
+    python segment.py --model $TGT_SPM_MODEL_FILE --input $train_tgt > $train_src-$TGT_LANG.sp.$TGT_LANG
 
-    echo "train src bpe file: ${train_src_bpe}"
-    head -n 5 $train_src_bpe
-    echo "train tgt bpe file: ${train_tgt_bpe}"
-    head -n 5 $train_tgt_bpe
+    echo "train src bpe file: $train_src.sp.$SRC_LANG"
+    head -n 2 $train_src.sp.$SRC_LANG
+    echo "train tgt bpe file: $train_tgt.sp.$TGT_LANG"
+    head -n 2 $train_tgt.sp.$TGT_LANG
 
     for var in 0 1 2
     do
-        echo "Running bpe on test split ${var} ...."
+        echo "Running sp on test split ${var} ...."
         test_split_src=$data_dir/en_ja_split.test${var}.$SRC_LANG
         test_split_tgt=$data_dir/en_ja_split.test${var}.$TGT_LANG
 
-        python segment.py --model $SRC_SPM_MODEL_FILE --input $test_split_src > $test_split_src.bpe
-        python segment.py --model $TGT_SPM_MODEL_FILE --input $test_split_tgt > $test_split_tgt.bpe
+        python segment.py --model $SRC_SPM_MODEL_FILE --input $test_split_src > $test_split_src-$TGT_LANG.sp.$SRC_LANG
+        python segment.py --model $TGT_SPM_MODEL_FILE --input $test_split_tgt > $test_split_src-$TGT_LANG.sp.$TGT_LANG
 
-        echo "src bpe file: ${test_split_src}.bpe"
-        head -n 5 ${test_split_src}.bpe
-        echo "tgt bpe file: ${test_split_src}.bpe"
-        head -n 5 ${test_split_src}.bpe
+        echo "src bpe file: $test_split_src.sp.$SRC_LANG"
+        head -n 2 $test_split_src.sp.$SRC_LANG
+        echo "tgt bpe file: $test_split_tgt.sp.$TGT_LANG"
+        head -n 2 $test_split_tgt.sp.$TGT_LANG
     done
 fi
 
 
 ### Fairseq Preprocessing
-#TODO
-#fairseq-preprocess --source-lang $SRC_LANG --target-lang $TGT_LANG  \
-# --trainpref $data_links_lang/train.sp \
-# --validpref $data_links_lang/test0.sp \
-# --testpref  $data_links_lang/test1.sp,$data_links_lang/test2.sp \
-# --workers 30 \
-# --tgtdict /exp/mpost/duo20/runs/models/${trg}.$matt_run_num/dict.${trg}.txt  \
-# --srcdict /exp/mpost/duo20/runs/models/${trg}.$matt_run_num/dict.${src}.txt  \
-# --destdir $databin_lang
+echo "Running fairseq preprocessing"
+fairseq-preprocess --source-lang $SRC_LANG --target-lang $TGT_LANG  \
+ --trainpref $train_src-$TGT_LANG.sp \
+ --validpref $data_dir/en_ja_split.test0.$SRC_LANG-$TGT_LANG.sp \
+ --testpref  $data_dir/en_ja_split.test1.$SRC_LANG-$TGT_LANG.sp,$data_dir/en_ja_split.test2.$SRC_LANG-$TGT_LANG.sp \
+ --workers 1 \
+ --tgtdict $TGT_DICT  \
+ --srcdict $SRC_DICT  \
+ --destdir $models_dir \
+ --cpu
+
 
 ### Fairseq Training
 #TODO

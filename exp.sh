@@ -5,12 +5,13 @@ SRC_LANG=en
 TGT_LANG=ja
 BASE_DIR=${1:-/Users/dennis/coding/cmsc828b-project}
 OWN_ENV=${2:-false}
+ORIG_MODEL_DIR=$BASE_DIR/${TGT_LANG}.2
 DUO_DATA_DIR=$BASE_DIR/dataverse_files/staple-2020-train
 DUO_EN_JA_FILE=$BASE_DIR/dataverse_files/staple-2020-train/en_ja/train.en_ja.2020-01-13.gold.txt
-SRC_SPM_MODEL_FILE=$BASE_DIR/ja.2/subword.$SRC_LANG.model
-TGT_SPM_MODEL_FILE=$BASE_DIR/ja.2/subword.$TGT_LANG.model
-SRC_DICT=$BASE_DIR/ja.2/dict.en.txt
-TGT_DICT=$BASE_DIR/ja.2/dict.ja.txt
+SRC_SPM_MODEL_FILE=$ORIG_MODEL_DIR/subword.src.model
+TGT_SPM_MODEL_FILE=$ORIG_MODEL_DIR/subword.trg.model
+SRC_DICT=$ORIG_MODEL_DIR/dict.en.txt
+TGT_DICT=$ORIG_MODEL_DIR/dict.ja.txt
 
 data_dir=$BASE_DIR/data
 mkdir -p $data_dir
@@ -34,7 +35,7 @@ if [ ! -d "${project_venv}" ] && [ $OWN_ENV = "false" ]; then
 fi
 
 if [ $OWN_ENV = "true" ]; then
-  source activate fairseq
+  source activate whale2020
 else
   source $project_venv/bin/activate
 fi
@@ -120,6 +121,53 @@ fairseq-preprocess --source-lang $SRC_LANG --target-lang $TGT_LANG  \
 
 ### Fairseq Training
 #TODO
+
+#module load cuda10.1/toolkit
+#module load cudnn/7.6.3_cuda10.1
+
+#nvidia-smi
+
+save_dir=$BASE_DIR/new_model
+mkdir -p $save_dir
+
+fairseq-train $models_dir \
+  --restore-file /exp/mpost/duo20/runs/models/ja.2/checkpoint_best.pt \
+  --fp16 \
+  --memory-efficient-fp16 \
+  --num-workers 0 \
+  --source-lang en \
+  --target-lang ja \
+  --save-dir $save_dir \
+  --seed 2 \
+  --arch transformer \
+  --share-decoder-input-output-embed \
+  --encoder-layers 6 \
+  --decoder-layers 6 \
+  --encoder-embed-dim 512 \
+  --decoder-embed-dim 512 \
+  --encoder-ffn-embed-dim 2048 \
+  --decoder-ffn-embed-dim 2048 \
+  --encoder-attention-heads 8 \
+  --decoder-attention-heads 8 \
+  --dropout 0.1 \
+  --attention-dropout 0.1 \
+  --relu-dropout 0.1 \
+  --weight-decay 0.0 \
+  --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
+  --optimizer adam --adam-betas '(0.9, 0.98)' \
+  --clip-norm 0.0 \
+  --lr-scheduler inverse_sqrt \
+  --warmup-updates 4000 \
+  --warmup-init-lr 1e-7 --lr 0.0005 --min-lr 1e-9 \
+  --max-tokens 8000 \
+  --max-epoch 200 \
+  --update-freq 10 \
+  --ddp-backend=no_c10d \
+  --no-epoch-checkpoints \
+  --log-format json --log-interval 1  &> $save_dir/train.log
+
+#supposed to have a --patience 10 hyperparam too...
+
 
 ### Decoding and Evaluation
 #TODO

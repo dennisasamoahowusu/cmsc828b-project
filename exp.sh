@@ -83,10 +83,10 @@ if [ ! -f $train_tgt.sp.$TGT_LANG ]; then
     python segment.py --model $SRC_SPM_MODEL_FILE --input $train_src > $train_src-$TGT_LANG.sp.$SRC_LANG
     python segment.py --model $TGT_SPM_MODEL_FILE --input $train_tgt > $train_src-$TGT_LANG.sp.$TGT_LANG
 
-    echo "train src bpe file: $train_src.sp.$SRC_LANG"
-    head -n 2 $train_src.sp.$SRC_LANG
-    echo "train tgt bpe file: $train_tgt.sp.$TGT_LANG"
-    head -n 2 $train_tgt.sp.$TGT_LANG
+    echo "train src bpe file: $train_src-$TGT_LANG.sp.$SRC_LANG"
+    head -n 2 $train_src-$TGT_LANG.sp.$SRC_LANG
+    echo "train tgt bpe file: $train_src-$TGT_LANG.sp.$TGT_LANG"
+    head -n 2 $train_src-$TGT_LANG.sp.$TGT_LANG
 
     for var in 0 1 2
     do
@@ -97,10 +97,10 @@ if [ ! -f $train_tgt.sp.$TGT_LANG ]; then
         python segment.py --model $SRC_SPM_MODEL_FILE --input $test_split_src > $test_split_src-$TGT_LANG.sp.$SRC_LANG
         python segment.py --model $TGT_SPM_MODEL_FILE --input $test_split_tgt > $test_split_src-$TGT_LANG.sp.$TGT_LANG
 
-        echo "src bpe file: $test_split_src.sp.$SRC_LANG"
-        head -n 2 $test_split_src.sp.$SRC_LANG
-        echo "tgt bpe file: $test_split_tgt.sp.$TGT_LANG"
-        head -n 2 $test_split_tgt.sp.$TGT_LANG
+        echo "src bpe file: $test_split_src-$TGT_LANG.sp.$SRC_LANG"
+        head -n 2 $test_split_src-$TGT_LANG.sp.$SRC_LANG
+        echo "tgt bpe file: $test_split_src-$TGT_LANG.sp.$TGT_LANG"
+        head -n 2 $test_split_src-$TGT_LANG.sp.$TGT_LANG
     done
 fi
 

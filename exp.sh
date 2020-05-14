@@ -122,10 +122,10 @@ fairseq-preprocess --source-lang $SRC_LANG --target-lang $TGT_LANG  \
 ### Fairseq Training
 #TODO
 
-#module load cuda10.1/toolkit
-#module load cudnn/7.6.3_cuda10.1
 
-#nvidia-smi
+module load cuda10.1/toolkit
+module load cudnn/7.6.3_cuda10.1
+nvidia-smi
 
 save_dir=$BASE_DIR/new_model
 mkdir -p $save_dir
@@ -167,7 +167,6 @@ fairseq-train $models_dir \
   --log-format json --log-interval 1  &> $save_dir/train.log
 
 #supposed to have a --patience 10 hyperparam too...
-
 
 ### Decoding and Evaluation
 #TODO

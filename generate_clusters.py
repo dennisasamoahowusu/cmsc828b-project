@@ -48,7 +48,7 @@ if __name__ == "__main__":
     parser.add_argument("num_clusters", type=int, help="Number of sentence codes")
     parser.add_argument(
         "subtraction_method",
-        choices=["no", "mean", "prompt"],
+        choices=["none", "mean", "prompt"],
         help=(
             "How to remove semantic information from the LASER representations before"
             "clustering"

@@ -16,6 +16,10 @@ TGT_DICT=$ORIG_MODEL_DIR/dict.$TGT_LANG.txt
 # set LASER directory --- will be created if does not already exist
 export LASER=/fs/clip-scratch/hoyle/sentence-codes/LASER 
 
+# Clustering parameters
+NUM_CLUSTERS=50
+SUBTRACTION_METHOD=none # one of "mean", "prompt", or "none"
+
 data_dir=$BASE_DIR/data/$TGT_LANG
 mkdir -p $data_dir
 
@@ -93,8 +97,8 @@ fi
 
 ## First, embed the sentences: 
 train_split=$data_dir/en_${TGT_LANG}_split.train
-laser_prompt_file=$data_dir/laser/en_${TGT_LANG}_split.train.prompts
-laser_translation_file=$data_dir/laser/en_${TGT_LANG}_split.train.translations
+laser_prompt_file=$data_dir/laser/train.prompts
+laser_translation_file=$data_dir/laser/train.translations
 
 if [ ! -f ${laser_translation_file}.npy ]; then
     echo "Creating LASER-friendly files ..."
@@ -104,7 +108,8 @@ if [ ! -f ${laser_translation_file}.npy ]; then
     model_dir="${LASER}/models"
     encoder="${model_dir}/bilstm.93langs.2018-12-26.pt"
     bpe_codes="${model_dir}/93langs.fcodes"
-
+    
+    echo "Creating LASER-embeddings ..."
     cat $laser_prompt_file \
     | python ${LASER}/source/embed.py \
         --encoder ${encoder} \
@@ -121,6 +126,10 @@ if [ ! -f ${laser_translation_file}.npy ]; then
         --output ${laser_translation_file}.npy \
         --verbose
 fi
+
+## Then, cluster the data
+echo "Generating Clusters"
+python generate_clusters.py $data_dir/laser $NUM_CLUSTERS $SUBTRACTION_METHOD
 
 
 ### Fairseq Preprocessing

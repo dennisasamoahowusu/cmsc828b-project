@@ -125,6 +125,19 @@ if [ ! -f ${laser_translation_file}.npy ]; then
         --bpe-codes ${bpe_codes} \
         --output ${laser_translation_file}.npy \
         --verbose
+
+    for var in 0 1 2
+    do
+        test_split_fname=$data_dir/en_${TGT_LANG}_split.test${var}.${TGT_LANG}
+
+        cat ${test_split_fname} \
+        | python ${LASER}/source/embed.py \
+            --encoder ${encoder} \
+            --token-lang ${TGT_LANG} \
+            --bpe-codes ${bpe_codes} \
+            --output $data_dir/laser/test${var}.translations.npy \
+            --verbose
+    done
 fi
 
 ## Then, cluster the data
@@ -137,17 +150,14 @@ python generate_clusters.py \
     --num_clusters $NUM_CLUSTERS \
     --subtraction_method $SUBTRACTION_METHOD
 
-### Fairseq Preprocessing
-echo "Running fairseq preprocessing"
-fairseq-preprocess --source-lang $SRC_LANG --target-lang $TGT_LANG  \
- --trainpref $train_src-$TGT_LANG.sp \
- --validpref $data_dir/en_ja_split.test0.$SRC_LANG-$TGT_LANG.sp \
- --testpref  $data_dir/en_ja_split.test1.$SRC_LANG-$TGT_LANG.sp,$data_dir/en_ja_split.test2.$SRC_LANG-$TGT_LANG.sp \
- --workers 1 \
- --tgtdict $TGT_DICT  \
- --srcdict $SRC_DICT  \
- --destdir $models_dir \
- --cpu
+echo "Assigning test sentences to clusters..."
+for var in 0 1 2
+do
+    python assign_clusters.py \
+        --embeddings_fpath ${data_dir}/laser/test${var}.translations.npy \
+        --centroids_fpath ${data_dir}/laser/train.${clustering_name}.centroids.npy \
+        --output_fpath ${data_dir}/laser/test${var}.${clustering_name}.map.json
+done
 
 
 ### Fairseq Training

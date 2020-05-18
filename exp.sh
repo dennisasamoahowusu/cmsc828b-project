@@ -2,18 +2,19 @@
 
 ### Variables
 SRC_LANG=en
-TGT_LANG=ko
+TGT_LANG=ja
 BASE_DIR=${1:-/fs/clip-scratch/hoyle/sentence-codes/cmsc828b-project}
 OWN_ENV=${2:-false}
 ORIG_MODEL_DIR=$BASE_DIR/${TGT_LANG}.2
-DUO_DATA_DIR=$BASE_DIR/../data/staple-2020-train
-DUO_EN_TGT_FILE=$BASE_DIR/../data/staple-2020-train/en_$TGT_LANG/train.en_$TGT_LANG.2020-01-13.gold.txt
+DUO_DATA_DIR=$BASE_DIR/data/staple-2020-train
+DUO_EN_TGT_FILE=$BASE_DIR/data/staple-2020-train/en_$TGT_LANG/train.en_$TGT_LANG.2020-01-13.gold.txt
 SRC_SPM_MODEL_FILE=$ORIG_MODEL_DIR/subword.src.model
 TGT_SPM_MODEL_FILE=$ORIG_MODEL_DIR/subword.trg.model
 SRC_DICT=$ORIG_MODEL_DIR/dict.en.txt
 TGT_DICT=$ORIG_MODEL_DIR/dict.$TGT_LANG.txt
 
-export LASER=/fs/clip-scratch/hoyle/sentence-codes/LASER
+# set LASER directory --- will be created if does not already exist
+export LASER=/fs/clip-scratch/hoyle/sentence-codes/LASER 
 
 data_dir=$BASE_DIR/data/$TGT_LANG
 mkdir -p $data_dir
@@ -79,40 +80,46 @@ fi
 
 
 ### Transforming bitext to include sentence codes
+# Set up LASER if it is not already (TODO: this is untested)
+if [ ! -f ${LASER}/README.md ]; then
+    echo "Cloning LASER repository..."
+    git clone https://github.com/facebookresearch/LASER.git ${LASER}
+    echo "Downloading LASER models..."
+    bash ${LASER}/install_models.sh
+    echo "Install external tools LASER relies on (uses modified script to fix japanese tokenization)"
+    bash ./install_external_laser_tools.sh
+fi
+
+
 ## First, embed the sentences: 
-echo "Creating LASER-friendly files ..."
 train_split=$data_dir/en_${TGT_LANG}_split.train
 laser_prompt_file=$data_dir/laser/en_${TGT_LANG}_split.train.prompts
 laser_translation_file=$data_dir/laser/en_${TGT_LANG}_split.train.translations
 
-python process_data_for_laser.py "${train_split}" "${laser_prompt_file}" "${laser_translation_file}"
+if [ ! -f ${laser_translation_file}.npy ]; then
+    echo "Creating LASER-friendly files ..."
+    python process_data_for_laser.py "${train_split}" "${laser_prompt_file}" "${laser_translation_file}"
 
-## (Below copied from the LASER repo)
-model_dir="${LASER}/models"
-encoder="${model_dir}/bilstm.93langs.2018-12-26.pt"
-bpe_codes="${model_dir}/93langs.fcodes"
+    ## (Below copied from the LASER repo)
+    model_dir="${LASER}/models"
+    encoder="${model_dir}/bilstm.93langs.2018-12-26.pt"
+    bpe_codes="${model_dir}/93langs.fcodes"
 
-cat $laser_prompt_file \
-  | python ${LASER}/source/embed.py \
-    --encoder ${encoder} \
-    --token-lang ${SRC_LANG} \
-    --bpe-codes ${bpe_codes} \
-    --output ${laser_prompt_file}.npy \
-    --verbose
+    cat $laser_prompt_file \
+    | python ${LASER}/source/embed.py \
+        --encoder ${encoder} \
+        --token-lang ${SRC_LANG} \
+        --bpe-codes ${bpe_codes} \
+        --output ${laser_prompt_file}.npy \
+        --verbose
 
-cat $laser_translation_file \
-  | python ${LASER}/source/embed.py \
-    --encoder ${encoder} \
-    --token-lang ${TGT_LANG} \
-    --bpe-codes ${bpe_codes} \
-    --output ${laser_translation_file}.npy \
-    --verbose
-
-        echo "src bpe file: $test_split_src-$TGT_LANG.sp.$SRC_LANG"
-        head -n 2 $test_split_src-$TGT_LANG.sp.$SRC_LANG
-        echo "tgt bpe file: $test_split_src-$TGT_LANG.sp.$TGT_LANG"
-        head -n 2 $test_split_src-$TGT_LANG.sp.$TGT_LANG
-    done
+    cat $laser_translation_file \
+    | python ${LASER}/source/embed.py \
+        --encoder ${encoder} \
+        --token-lang ${TGT_LANG} \
+        --bpe-codes ${bpe_codes} \
+        --output ${laser_translation_file}.npy \
+        --verbose
 fi
 
 

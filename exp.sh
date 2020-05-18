@@ -17,8 +17,7 @@ TGT_DICT=$ORIG_MODEL_DIR/dict.$TGT_LANG.txt
 export LASER=/fs/clip-scratch/hoyle/sentence-codes/LASER 
 
 # Clustering parameters
-NUM_CLUSTERS=50
-SUBTRACTION_METHOD=none # one of "mean", "prompt", or "none"
+SUBTRACTION_METHOD=mean # one of "mean", "prompt", or "none"
 
 data_dir=$BASE_DIR/data/$TGT_LANG
 mkdir -p $data_dir
@@ -110,7 +109,7 @@ if [ ! -f ${laser_translation_file}.npy ]; then
     bpe_codes="${model_dir}/93langs.fcodes"
     
     echo "Creating LASER-embeddings ..."
-    cat $laser_prompt_file \
+    cat ${laser_prompt_file} \
     | python ${LASER}/source/embed.py \
         --encoder ${encoder} \
         --token-lang ${SRC_LANG} \
@@ -118,7 +117,7 @@ if [ ! -f ${laser_translation_file}.npy ]; then
         --output ${laser_prompt_file}.npy \
         --verbose
 
-    cat $laser_translation_file \
+    cat ${laser_translation_file} \
     | python ${LASER}/source/embed.py \
         --encoder ${encoder} \
         --token-lang ${TGT_LANG} \
@@ -126,37 +125,47 @@ if [ ! -f ${laser_translation_file}.npy ]; then
         --output ${laser_translation_file}.npy \
         --verbose
 
-    for var in 0 1 2
+    for var in 0 1
     do
-        test_split_fname=$data_dir/en_${TGT_LANG}_split.test${var}.${TGT_LANG}
+        test_split=$data_dir/en_${TGT_LANG}_split.test${var}
+        test_laser_prompt_file=$data_dir/laser/test${var}.prompts
+        test_laser_translation_file=$data_dir/laser/test${var}.translations
 
-        cat ${test_split_fname} \
+        python process_data_for_laser.py "${test_split}" "${test_laser_prompt_file}" "${test_laser_translation_file}"
+
+        cat ${test_laser_prompt_file} \
+        | python ${LASER}/source/embed.py \
+            --encoder ${encoder} \
+            --token-lang ${SRC_LANG} \
+            --bpe-codes ${bpe_codes} \
+            --output ${test_laser_prompt_file}.npy \
+            --verbose
+
+        cat ${test_laser_translation_file} \
         | python ${LASER}/source/embed.py \
             --encoder ${encoder} \
             --token-lang ${TGT_LANG} \
             --bpe-codes ${bpe_codes} \
-            --output $data_dir/laser/test${var}.translations.npy \
+            --output ${test_laser_translation_file}.npy \
             --verbose
     done
 fi
 
 ## Then, cluster the data
 echo "Generating clusters from training data..."
-clustering_name=k-${NUM_CLUSTERS}.subtract-${SUBTRACTION_METHOD}
-
-python generate_clusters.py \
+python generate_clusters.py train \
     --input_dir ${data_dir}/laser \
-    --cluster_output_name $clustering_name \
-    --num_clusters $NUM_CLUSTERS \
+    --split_name train \
     --subtraction_method $SUBTRACTION_METHOD
 
 echo "Assigning test sentences to clusters..."
-for var in 0 1 2
+for var in 0 1
 do
-    python assign_clusters.py \
-        --embeddings_fpath ${data_dir}/laser/test${var}.translations.npy \
-        --centroids_fpath ${data_dir}/laser/train.${clustering_name}.centroids.npy \
-        --output_fpath ${data_dir}/laser/test${var}.${clustering_name}.map.json
+    python generate_clusters.py assign \
+        --input_dir ${data_dir}/laser \
+        --split_name test${var} \
+        --subtraction_method $SUBTRACTION_METHOD \
+        --clusters_to_show 0
 done
 
 

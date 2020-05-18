@@ -4,7 +4,7 @@ from pathlib import Path
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("input_fpath", help="Train file (in original format)")
+    parser.add_argument("input_fpath", help="Text file (in original format)")
     parser.add_argument("prompt_output_fpath", help="Prompt file")
     parser.add_argument("translation_output_fpath", help="Translation file")
     args = parser.parse_args()
@@ -12,7 +12,9 @@ if __name__ == "__main__":
     # prepare path names
     outdir = Path(args.prompt_output_fpath).parent
     outdir.mkdir(exist_ok=True)
-    map_outpath = Path(outdir, f"map.json")
+    
+    split_name = Path(args.input_fpath).name.split(".")[-1]
+    map_outpath = Path(outdir, f"{split_name}.map.json")
 
     # split up prompts and translations into different text files
     idx_map = []

@@ -128,9 +128,14 @@ if [ ! -f ${laser_translation_file}.npy ]; then
 fi
 
 ## Then, cluster the data
-echo "Generating Clusters"
-python generate_clusters.py $data_dir/laser $NUM_CLUSTERS $SUBTRACTION_METHOD
+echo "Generating clusters from training data..."
+clustering_name=k-${NUM_CLUSTERS}.subtract-${SUBTRACTION_METHOD}
 
+python generate_clusters.py \
+    --input_dir ${data_dir}/laser \
+    --cluster_output_name $clustering_name \
+    --num_clusters $NUM_CLUSTERS \
+    --subtraction_method $SUBTRACTION_METHOD
 
 ### Fairseq Preprocessing
 echo "Running fairseq preprocessing"

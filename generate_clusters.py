@@ -12,7 +12,6 @@ import numpy as np
 
 # LASER imports
 from embed import EmbedLoad
-from mine_bitexts import knn
 
 
 def train_kmeans(fo, d, k, **kwargs):
@@ -43,17 +42,25 @@ def sample_sentences_from_top_clusters(clusters, n=5, k=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("input_dir", help="Directory containing LASER embeddings")
-
-    parser.add_argument("num_clusters", type=int, help="Number of sentence codes")
     parser.add_argument(
-        "subtraction_method",
+        "--input_dir", required=True, help="Directory containing LASER embeddings"
+    )
+    parser.add_argument(
+        "--cluster_output_name", required=True, help="Name to identify this clustering"
+    )
+    parser.add_argument(
+        "--num_clusters", required=True, type=int, help="Number of sentence codes"
+    )
+    parser.add_argument(
+        "--subtraction_method",
+        required=True,
         choices=["none", "mean", "prompt"],
         help=(
             "How to remove semantic information from the LASER representations before"
             "clustering"
         )
     )
+
     parser.add_argument(
         "--kmeans-iterations", type=int, default=25, help="Number of random k-means starts"
     )

@@ -2,18 +2,20 @@
 
 ### Variables
 SRC_LANG=en
-TGT_LANG=ja
-BASE_DIR=${1:-/Users/dennis/coding/cmsc828b-project}
+TGT_LANG=ko
+BASE_DIR=${1:-/fs/clip-scratch/hoyle/sentence-codes/cmsc828b-project}
 OWN_ENV=${2:-false}
 ORIG_MODEL_DIR=$BASE_DIR/${TGT_LANG}.2
-DUO_DATA_DIR=$BASE_DIR/dataverse_files/staple-2020-train
-DUO_EN_JA_FILE=$BASE_DIR/dataverse_files/staple-2020-train/en_ja/train.en_ja.2020-01-13.gold.txt
+DUO_DATA_DIR=$BASE_DIR/../data/staple-2020-train
+DUO_EN_TGT_FILE=$BASE_DIR/../data/staple-2020-train/en_$TGT_LANG/train.en_$TGT_LANG.2020-01-13.gold.txt
 SRC_SPM_MODEL_FILE=$ORIG_MODEL_DIR/subword.src.model
 TGT_SPM_MODEL_FILE=$ORIG_MODEL_DIR/subword.trg.model
 SRC_DICT=$ORIG_MODEL_DIR/dict.en.txt
-TGT_DICT=$ORIG_MODEL_DIR/dict.ja.txt
+TGT_DICT=$ORIG_MODEL_DIR/dict.$TGT_LANG.txt
 
-data_dir=$BASE_DIR/data
+export LASER=/fs/clip-scratch/hoyle/sentence-codes/LASER
+
+data_dir=$BASE_DIR/data/$TGT_LANG
 mkdir -p $data_dir
 
 models_dir=$BASE_DIR/models
@@ -44,19 +46,19 @@ fi
 ### Creating train and test splits from duolingo data
 cd $BASE_DIR
 if [ ! -f $train_tgt ]; then
-#    echo "Getting Training Data"
-#    python get_traintest_data.py --fname $DUO_EN_JA_FILE --srcfname $train_src --tgtfname $train_tgt
-#    echo "train src file: ${train_src}"
-#    head -n 5 $train_src
-#    echo "train tgt file: ${train_tgt}"
-#    head -n 5 $train_tgt
+    echo "Getting Training Data"
+    python get_traintest_data.py --fname $DUO_EN_TGT_FILE --srcfname $train_src --tgtfname $train_tgt
+    echo "train src file: ${train_src}"
+    head -n 5 $train_src
+    echo "train tgt file: ${train_tgt}"
+    head -n 5 $train_tgt
 
     echo "Getting data splits ...."
-    python new_create_splits.py --langs "ja" --output_dir $data_dir --duo_data_dir $DUO_DATA_DIR
+    python new_create_splits.py --langs "$TGT_LANG" --output_dir $data_dir --duo_data_dir $DUO_DATA_DIR
     echo "Done getting data splits"
 
     echo "Converting train split to bitext ...."
-    train_split=$data_dir/en_ja_split.train
+    train_split=$data_dir/en_${TGT_LANG}_split.train
     python get_traintest_data.py --fname $train_split --srcfname $train_src --tgtfname $train_tgt --prefix train
     echo "train src file: ${train_src}"
     head -n 2 $train_src
@@ -66,7 +68,7 @@ if [ ! -f $train_tgt ]; then
     for var in 0 1 2
     do
         echo "Converting test${var} split to bitext ...."
-        test_split=$data_dir/en_ja_split.test${var}
+        test_split=$data_dir/en_${TGT_LANG}_split.test${var}
         python get_traintest_data.py --fname $test_split --srcfname $test_split.$SRC_LANG --tgtfname $test_split.$TGT_LANG
         echo "src file: $test_split.$SRC_LANG"
         head -n 2 $test_split.$SRC_LANG
@@ -75,28 +77,36 @@ if [ ! -f $train_tgt ]; then
     done
 fi
 
+
 ### Transforming bitext to include sentence codes
-#TODO
+## First, embed the sentences: 
+echo "Creating LASER-friendly files ..."
+train_split=$data_dir/en_${TGT_LANG}_split.train
+laser_prompt_file=$data_dir/laser/en_${TGT_LANG}_split.train.prompts
+laser_translation_file=$data_dir/laser/en_${TGT_LANG}_split.train.translations
 
-### Running bpe using sentence piece
-if [ ! -f $train_tgt.sp.$TGT_LANG ]; then
-    echo "Running sp on train src and target ...."
-    python segment.py --model $SRC_SPM_MODEL_FILE --input $train_src > $train_src-$TGT_LANG.sp.$SRC_LANG
-    python segment.py --model $TGT_SPM_MODEL_FILE --input $train_tgt > $train_src-$TGT_LANG.sp.$TGT_LANG
+python process_data_for_laser.py "${train_split}" "${laser_prompt_file}" "${laser_translation_file}"
 
-    echo "train src bpe file: $train_src-$TGT_LANG.sp.$SRC_LANG"
-    head -n 2 $train_src-$TGT_LANG.sp.$SRC_LANG
-    echo "train tgt bpe file: $train_src-$TGT_LANG.sp.$TGT_LANG"
-    head -n 2 $train_src-$TGT_LANG.sp.$TGT_LANG
+## (Below copied from the LASER repo)
+model_dir="${LASER}/models"
+encoder="${model_dir}/bilstm.93langs.2018-12-26.pt"
+bpe_codes="${model_dir}/93langs.fcodes"
 
-    for var in 0 1 2
-    do
-        echo "Running sp on test split ${var} ...."
-        test_split_src=$data_dir/en_ja_split.test${var}.$SRC_LANG
-        test_split_tgt=$data_dir/en_ja_split.test${var}.$TGT_LANG
+cat $laser_prompt_file \
+  | python ${LASER}/source/embed.py \
+    --encoder ${encoder} \
+    --token-lang ${SRC_LANG} \
+    --bpe-codes ${bpe_codes} \
+    --output ${laser_prompt_file}.npy \
+    --verbose
 
-        python segment.py --model $SRC_SPM_MODEL_FILE --input $test_split_src > $test_split_src-$TGT_LANG.sp.$SRC_LANG
-        python segment.py --model $TGT_SPM_MODEL_FILE --input $test_split_tgt > $test_split_src-$TGT_LANG.sp.$TGT_LANG
+cat $laser_translation_file \
+  | python ${LASER}/source/embed.py \
+    --encoder ${encoder} \
+    --token-lang ${TGT_LANG} \
+    --bpe-codes ${bpe_codes} \
+    --output ${laser_translation_file}.npy \
+    --verbose
 
         echo "src bpe file: $test_split_src-$TGT_LANG.sp.$SRC_LANG"
         head -n 2 $test_split_src-$TGT_LANG.sp.$SRC_LANG

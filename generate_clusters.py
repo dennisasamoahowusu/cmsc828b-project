@@ -71,7 +71,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--samples_per_cluster",
         type=int, default=5, help="Show this many sampled sentences from each cluster"
+    )
+    parser.add_argument(
+        "--do_not_save", action="store_true", default=False, help="Don't save results"
     )    
+
 
     parser.add_argument("--seed", type=int, default=11235, help="Random seed")
     args = parser.parse_args()
@@ -119,16 +123,19 @@ if __name__ == "__main__":
         gpu=not args.use_cpu,
         seed=args.seed,
     )
-    
+
     # Save cluster assignments
-    for mapping, cluster in zip(sent_map, clusters):
-        mapping['code'] = int(cluster)
+    if not args.do_not_save:
+        for mapping, cluster in zip(sent_map, clusters):
+            mapping['code'] = int(cluster)
 
-    with open(Path(input_dir, f"train.k-{args.num_clusters}.subtract-{args.subtraction_method}.map.json"), "w") as outfile:
-        json.dump(sent_map, outfile)
+        prefix = f"train.{args.cluster_output_name}"
 
-    # Save centroids
-    np.save(Path(input_dir, f"train.k-{args.num_clusters}.subtract-{args.subtraction_method}.centroids.npy"), kmeans.centroids)
+        with open(Path(input_dir, f"{prefix}.map.json"), "w") as outfile:
+            json.dump(sent_map, outfile)
+
+        # Save centroids
+        np.save(Path(input_dir, f"{prefix}.centroids.npy"), kmeans.centroids)
 
     # Print off examples
     if args.clusters_to_show:

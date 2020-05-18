@@ -6,6 +6,7 @@ TGT_LANG=ja
 BASE_DIR=${1:-/Users/dennis/coding/cmsc828b-project}
 OWN_ENV=${2:-false}
 ORIG_MODEL_DIR=$BASE_DIR/${TGT_LANG}.2
+CLUSTER_DIR=$BASE_DIR/laser-embeds
 DUO_DATA_DIR=$BASE_DIR/dataverse_files/staple-2020-train
 DUO_EN_JA_FILE=$BASE_DIR/dataverse_files/staple-2020-train/en_ja/train.en_ja.2020-01-13.gold.txt
 SRC_SPM_MODEL_FILE=$ORIG_MODEL_DIR/subword.src.model
@@ -76,7 +77,9 @@ if [ ! -f $train_tgt ]; then
 fi
 
 ### Transforming bitext to include sentence codes
-#TODO
+ja_train_with_sc_map=$CLUSTER_DIR/ja/train.k-med.subtract-mean.map.json
+ja_train_prompts=$CLUSTER_DIR/ja/train.prompts
+ja_train_trans=$CLUSTER_DIR/ja/train.translations
 
 ### Running bpe using sentence piece
 if [ ! -f $train_tgt.sp.$TGT_LANG ]; then

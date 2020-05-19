@@ -97,7 +97,7 @@ if [ ! -d "${sc_output_dir}" ]; then
 fi
 
 split=train
-method=subtract-mean
+method=subtract-prompt
 
 train_src=$sc_output_dir/$split-$method.sc.src
 train_tgt=$sc_output_dir/$split-$method.sc.tgt
@@ -106,8 +106,8 @@ split=test0
 val_src=$sc_output_dir/$split-$method.sc.src
 val_tgt=$sc_output_dir/$split-$method.sc.tgt
 
-train_sp=$data_dir/train.sp
-val_sp=$data_dir/val.sp
+train_sp=$data_dir/train.sp.$method
+val_sp=$data_dir/val.sp.$method
 
 ### Running bpe using sentence piece
 if [ ! -f $train_sp.$SRC_LANG ]; then
@@ -147,6 +147,7 @@ if [ ! -f $train_sp.$SRC_LANG ]; then
     done
 fi
 
+mkdir -p $models_dir/$method
 
 ### Fairseq Preprocessing
 echo "Running fairseq preprocessing"
@@ -157,52 +158,52 @@ fairseq-preprocess --source-lang $SRC_LANG --target-lang $TGT_LANG  \
  --workers 1 \
  --tgtdict $TGT_DICT  \
  --srcdict $SRC_DICT  \
- --destdir $models_dir \
+ --destdir $models_dir/$method \
  --cpu
 
 
-#module load cuda10.1/toolkit
-#module load cudnn/7.6.3_cuda10.1
-#nvidia-smi
-#
-#save_dir=$BASE_DIR/new_model
-#mkdir -p $save_dir
-#
-#fairseq-train $models_dir \
-#  --restore-file /exp/mpost/duo20/runs/models/ja.2/checkpoint_best.pt \
-#  --fp16 \
-#  --memory-efficient-fp16 \
-#  --num-workers 0 \
-#  --source-lang en \
-#  --target-lang ja \
-#  --save-dir $save_dir \
-#  --seed 2 \
-#  --arch transformer \
-#  --share-decoder-input-output-embed \
-#  --encoder-layers 6 \
-#  --decoder-layers 6 \
-#  --encoder-embed-dim 512 \
-#  --decoder-embed-dim 512 \
-#  --encoder-ffn-embed-dim 2048 \
-#  --decoder-ffn-embed-dim 2048 \
-#  --encoder-attention-heads 8 \
-#  --decoder-attention-heads 8 \
-#  --dropout 0.1 \
-#  --attention-dropout 0.1 \
-#  --relu-dropout 0.1 \
-#  --weight-decay 0.0 \
-#  --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
-#  --optimizer adam --adam-betas '(0.9, 0.98)' \
-#  --clip-norm 0.0 \
-#  --lr-scheduler inverse_sqrt \
-#  --warmup-updates 4000 \
-#  --warmup-init-lr 1e-7 --lr 0.0005 --min-lr 1e-9 \
-#  --max-tokens 8000 \
-#  --max-epoch 200 \
-#  --update-freq 10 \
-#  --ddp-backend=no_c10d \
-#  --no-epoch-checkpoints \
-#  --log-format json --log-interval 1  &> $save_dir/train.log
+module load cuda10.1/toolkit
+module load cudnn/7.6.3_cuda10.1
+nvidia-smi
+
+save_dir=$BASE_DIR/new_model_$method
+mkdir -p $save_dir
+
+fairseq-train $models_dir/$method \
+  --restore-file /exp/mpost/duo20/runs/models/ja.2/checkpoint_best.pt \
+  --fp16 \
+  --memory-efficient-fp16 \
+  --num-workers 0 \
+  --source-lang en \
+  --target-lang ja \
+  --save-dir $save_dir \
+  --seed 2 \
+  --arch transformer \
+  --share-decoder-input-output-embed \
+  --encoder-layers 6 \
+  --decoder-layers 6 \
+  --encoder-embed-dim 512 \
+  --decoder-embed-dim 512 \
+  --encoder-ffn-embed-dim 2048 \
+  --decoder-ffn-embed-dim 2048 \
+  --encoder-attention-heads 8 \
+  --decoder-attention-heads 8 \
+  --dropout 0.1 \
+  --attention-dropout 0.1 \
+  --relu-dropout 0.1 \
+  --weight-decay 0.0 \
+  --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
+  --optimizer adam --adam-betas '(0.9, 0.98)' \
+  --clip-norm 0.0 \
+  --lr-scheduler inverse_sqrt \
+  --warmup-updates 4000 \
+  --warmup-init-lr 1e-7 --lr 0.0005 --min-lr 1e-9 \
+  --max-tokens 8000 \
+  --max-epoch 200 \
+  --update-freq 10 \
+  --ddp-backend=no_c10d \
+  --no-epoch-checkpoints \
+  --log-format json --log-interval 1  &> $save_dir/train.log
 
 #supposed to have a --patience 10 hyperparam too...
 

@@ -1,0 +1,122 @@
+Trained clusters, SSE 27340.6
+Printing off 10 sentences from 10 largest clusters
+
+	Cluster 136
+i want to tell you everything.           | 僕はすべてをあなたに告げたいと思う。
+she has lost weight.                     | 彼女の体重は減ってきました。
+no one told me that they had come.       | 彼らが来た事を誰も僕に教えなかった。
+he wants to respond to her.              | 彼は彼女に返事をしたいと思います。
+my parents will introduce us.            | 親が僕たちを紹介するであろう。
+yesterday i walked to my house.          | 私は昨日に自分の家まで歩いて行きました。
+the skirt is too short.                  | スカートは余りにも短かすぎです。
+i like teaching children.                | 子供達を教えるのが好きだ。
+he tries again later.                    | 彼はもう一度後で試します。
+walking is good for you.                 | 歩くのは君の身体にとって良いことだ。
+
+	Cluster 158
+someone is at the door.                  | 誰かドアのとこにいるよ。
+their children speak english.            | 彼らの子供達が英語を喋られる。
+his brother is in prison.                | 彼の兄弟は拘置所の中です。
+i want to see my son now.                | 僕は自分の息子と今会いたいと思ってます。
+i go to europe next week.                | 翌週私はヨーロッパへ行きます。
+we eat bread.                            | 僕らがパンを食う。
+she tells him everything.                | 彼女は彼に全部言ってくれる。
+in general we eat fish on friday.        | 通例私らは魚を金曜日に食べる。
+she does not want to suffer.             | 彼女は苦しみは望んではいません。
+she is over fifty years old.             | 彼女の年齢は50を過ぎてる。
+
+	Cluster   0
+now she is in danger.                    | 彼女は今危ない状態です。
+he has played in europe.                 | 彼はヨーロッパでプレイをしたことがあります。
+the risk is too big.                     | 危険が高すぎます。
+they give many examples.                 | 彼らは沢山の例を示します。
+we will start soon.                      | すぐ私たちは始めるつもり。
+i trust what she says.                   | 私は彼女の話を信じます。
+i need to read more poetry.              | 私にはより詩歌を読まなくてはいけない。
+we are very tired now.                   | 我々は現在大変疲れています。
+i trust what she says.                   | 彼女が言っている事を私は信じています。
+i have to enter the house.               | 私は家の中へ入らないとなりません。
+
+	Cluster  55
+i heard about the attack.                | 私はその攻撃に関して耳にしました。
+there are over fifty newspapers.         | そこには50以上の新聞があります。
+the doctors have to analyze the results. | その医師たちはその結果を分析しなくてはいけない。
+when is the next presentation?           | その次回のプレゼンテーションは何時ですか。
+i have to return the book.               | 私はその本を返さなければなりません。
+the documents are on the desk.           | そのドキュメントがその机上です。
+the sponge is on the table.              | そのスポンジはテーブルの上にある。
+i am the director.                       | 私はその指導者よ。
+the documents are on the desk.           | それらのドキュメントが机の上だ。
+even you have the book.                  | 君すらその本を持っている。
+
+	Cluster  72
+i work tonight.                          | 私は今日の夜仕事します。
+your smile makes me happy.               | あなたの微笑みは僕を幸せにしてくれるんだ。
+you know each other.                     | 君らは互い知り合いである。
+i have it.                               | 僕はそれ所持してます。
+i am sorry.                              | 私は申し訳ないと思ってる。
+when i write, you write.                 | 君は僕が書く時には書いてください。
+who are they?                            | 彼らはどちら様なのだろうか。
+he pays.                                 | 彼は支払う。
+he takes my food.                        | 彼は僕のご飯を奪います。
+she is following me.                     | 彼女は私のあとをつけています。
+
+	Cluster 143
+what do you think of modern art?         | 現代芸術についてはどう考えますか?
+do you like french literature?           | 君は仏文学好き?
+do you have a boyfriend?                 | あなたにボーイフレンドが居るんです？
+there is a cat under the desk.           | ねこ一匹がデスクの下にいる。
+will you sell your house to him?         | 君は彼に自分の家を売却する予定なんですか？
+why do you need permission?              | なぜあなたには許可が要るのですか？
+why do you drive his car?                | なんであなたが彼の自動車を運転しているの?
+his brother is in prison.                | 彼の弟が監獄に入ってる。
+will you sell your house to him?         | 君の家を彼に売るつもりなんですか？
+is there a nurse here?                   | ここには看護婦がいるか？
+
+	Cluster  15
+the station is to the west of the hotel. | その駅はホテルから西側。
+the artist is in the district.           | 芸術家は地区にいる。
+the dog is ours.                         | 犬が我々のものだ。
+he visits his friend.                    | 彼は友達を訪問します。
+my dad is in the garden.                 | 僕の父さんは庭の中。
+the important crops are coffee and fruit. | 重要な農作物はコーヒーやフルーツです。
+the ambulance took my husband to the hospital. | 救急車が私の主人を病院へ運んで行きました。
+the soldier looked to the boy.           | 軍人は男に目を向けました。
+my friend studies chemistry at the university. | 友達は大学で化学を研究してます。
+she is the worst student.                | 彼女が最も悪い学生だ。
+
+	Cluster 135
+i go swimming once a week.               | 週１回スイミングに行く。
+i am the director.                       | その監督だよ。
+i have to return home.                   | 自宅に戻らなければ。
+i mix the two colors.                    | 2色合わせる。
+i am going to tell you something.        | 何かを話すだ。
+i will have found the restaurant.        | レストランを見つけ出してしまう事だろう。
+however, i have no money.                | だが、お金がありません。
+i will have found the restaurant.        | レストランを探し出しているでしょう。
+i am ready to die.                       | 死ぬ覚悟が出来ている。
+i already decided.                       | 既に決定した。
+
+	Cluster 187
+it is bad for the head.                  | 頭のために良くないんですよ。
+the doctors had discovered the problem.  | その医師達が問題を発見していた。
+the parents talk about the matter.       | 両親が事柄について話し合う。
+the horse sees the cat.                  | その馬は猫が見える。
+she has to enter the building.           | 彼女はビルの中へ入らなくてはならないです。
+we walk along the water.                 | 水のある所沿いを私たちは歩きます。
+he won the first prize.                  | 彼は一等賞をとった。
+they fly to the village.                 | 彼女らは村へと行きます。
+it is bad for the head.                  | 頭のために悪いのだよ。
+the parents talk about the matter.       | 親たちはことについて話します。
+
+	Cluster  48
+she is still a girl.                     | 彼女は未だに若い少女のままだ。
+you are a doctor.                        | 君はドクターだ。
+it is an official dinner.                | それが公の夕食。
+hate is a global issue.                  | 恨みは世界規模の課題です。
+he has a beautiful voice.                | 彼は綺麗な歌声を持ってます。
+my father is a farmer.                   | 親父は農業をしてる。
+she is independent of her parents.       | 彼女は彼女の親からは自立している。
+my father is a farmer.                   | 父は農業家だ。
+she is the best of her class.            | 彼女が彼女のクラスの一番上である。
+my son is just a boy.                    | 息子はほんの子供に過ぎません。

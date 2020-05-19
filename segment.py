@@ -16,12 +16,12 @@ def segment(model_path: str, input: str, output_file: str, no_sample: bool) -> N
         else:
             pieces = sp.sample_encode_as_pieces(content, -1, 0.5)
         pieces_str = ""
-        pieces_length_str = ""
+        # pieces_length_str = ""
         for piece in pieces:
             pieces_str += piece + " "
-            pieces_length_str += str(len(piece)) + " "
+            # pieces_length_str += str(len(piece)) + " "
         print(pieces_str)
-        piece_lengths.append(pieces_length_str)
+        piece_lengths.append(len(pieces))
 
     with open(output_file, "w") as f:
         for x in piece_lengths:

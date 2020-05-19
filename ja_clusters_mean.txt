@@ -1,0 +1,122 @@
+Trained clusters, SSE 11672.4
+Printing off 10 sentences from 10 largest clusters
+
+	Cluster  67
+you do not know who i am.                | 私が誰かは君は分かっていない。
+i do not like this method.               | この手法を好きでありません。
+we were not sleeping on friday.          | 私達は金曜に眠っていませんでした。
+i want you to sleep.                     | 私は君に眠ってもらいたい。
+many people died in that accident.       | 多くの方たちがその事故で亡くなりました。
+they will sleep in the same bed.         | 彼女らは同じベッドに眠るつもりだ。
+would you like to do it?                 | それがあなたは行いたいの？
+yours is mine.                           | お前の物は僕のです。
+they talk for ninety minutes.            | 彼女らは九十分にわたって話をする。
+i go to europe next week.                | 来週に私は欧州へ行きます。
+
+	Cluster  72
+i love you more than him.                | 私はあなたのことが彼よりも大好きです。
+they live together.                      | 彼女たちは同居している。
+i like summer and fall.                  | 私が夏と秋が好きである。
+i usually walk.                          | 僕は日常的に歩いてます。
+i want to be a father.                   | 私はお父さんになりたいと思っています。
+we need to reach that train.             | 私達はあの列車に間に合わなくてはいけない。
+i am american.                           | オレは米国じんである。
+it is on top of it.                      | それはその頂きについている。
+many children eat.                       | 多くの子供たちは食べます。
+i did not eat cheese yesterday.          | 私はチーズを昨日は食べてないです。
+
+	Cluster  76
+i will follow the animal.                | 私はその動物の後を追って行こうと思う。
+i want her to close that book.           | 僕は彼女にその本を閉じてもらいたいと思っています。
+my friend studies chemistry at the university. | 私の友達はその大学で化学を勉強する。
+she makes the dinner.                    | 彼女がその晩御飯を作ります。
+i will call the doctor.                  | 私がその医者に連絡する予定だ。
+he eats the meal.                        | 彼はその食事をとります。
+where do they keep the salt?             | 彼らはその塩をどこでしまっていますか？
+my friend plays the violin at church.    | 友人は教会でそのヴァイオリンを弾く。
+taro eats the fourth apple.              | 太郎がその4個目の林檎を食べる。
+the tomato is for the soup.              | トマトはそのスープ用のです。
+
+	Cluster 105
+i know a good italian restaurant.        | 私はよいイタリアンレストランを知っているよ。
+we will follow you.                      | 私たちはあなたを追て行くつもりだ。
+i like that position.                    | その立場が好きです。
+i need your help.                        | 私はあなたの手伝いが要ります。
+that article is interesting.             | あの記事が面白いのです。
+i need to create a profile.              | 私は紹介文を作らないとならないです。
+my friend studies photography.           | 友達は写真を学んでいます。
+we do not consider it tea.               | 私たちはそれがお茶であると考えていません。
+it is an excellent wine.                 | それは優秀なワインである。
+she has finally won.                     | やっと彼女は勝ちました。
+
+	Cluster  71
+would you like to do it?                 | あなたはそれがやってみたいのですか？
+questions about me                       | 私に関してのいくつかの問いである
+i like teaching children.                | 子どもらへ教える事が私は好きです。
+you need your dad's signature.           | 君はあなたのお父さんのサインを必要とします。
+my grandmother                           | 俺の祖母さん
+there is no other choice.                | それ以外に選択の余地が無い。
+i know myself.                           | 私は己のことを分かる。
+where do they make it?                   | 彼女らはどこでそれを作ってるんですか？
+it is on top of it.                      | それはそこの頂点についてます。
+hello, what is your name?                | こんにちは、あなたのお名前は何といいますか？
+
+	Cluster 143
+my razor is green.                       | 僕のカミソリは緑。
+i tell her that i eat fish.              | 彼女に私が魚を食べることを言います。
+some people like danger.                 | ある人は危険が好き。
+he is a musical boy.                     | 彼は音楽好きの少年。
+what do you think of his attitude?       | 彼の姿勢について君はどう思う？
+how old are you?                         | きみは何才か？
+she has sent two boxes.                  | 彼女は二箱送ってしまった。
+where did they go?                       | どこに彼らは行ったの？
+after one month, he leaves.              | 一月のち、彼が去る。
+are we going to eat?                     | 我々が食べますです？
+
+	Cluster  28
+we read newspapers.                      | 俺たちは数紙の新聞を読む。
+after one month, he leaves.              | 一月のち、彼が離れる。
+my dog sleeps on top of my shirt.        | 私のイヌが私のシャツの上に寝てる。
+i watched that film last night.          | 僕があの映画を昨日の夜見た。
+i eat a strawberry.                      | 俺が一ついちごを食べる。
+she is her real mother.                  | 彼女が彼女の真お母さんだ。
+my uncle is a worker.                    | 僕の叔父さんは働いてる。
+i eat a strawberry.                      | 俺はいちごを一つ食べる。
+give me a call tonight.                  | 今日の夜僕に電話ちょうだい。
+i am ready to die.                       | 私は死ぬ用意は出来てる。
+
+	Cluster  61
+the boy calls his mother.                | その男子は彼の母親に電話をする。
+the lawyer is here already.              | その弁護士がもうここにいます。
+we had already established it.           | 我々はそれをもうすでに樹立していた。
+the fish has oil.                        | その魚は石油を含んでいる。
+the man pays.                            | その男性は払います。
+the dog's neck is really long.           | その犬の首がかなり長いんだ。
+the forest is green.                     | その森は緑色である。
+it is not fair.                          | それはフェアでない。
+the bag is pretty.                       | その鞄はかわいいの。
+the city is a trade center.              | その都市は取引の中心地です。
+
+	Cluster 187
+he sees the inside.                      | 彼には中が見えます。
+the ambulance took my husband to the hospital. | 救急車は私の夫を病院まで運びました。
+i need to shut the door.                 | 私は扉を閉めなきゃいけないです。
+they are going to discover the truth.    | 彼らは事実を知ってしまう。
+we won the war thanks to the navy.       | 海軍のお陰で我々は戦争に勝った。
+we eat by the water.                     | 我々は水辺のそばで食事する。
+he has to place the glass on the right.  | 彼はグラスを右に置くべきだ。
+she has to enter the building.           | 彼女は建築物の中へ入らなくてはいけません。
+the ambulance took my husband to the hospital. | 救急車が私の旦那を病院へ運んで行った。
+the man eats the chicken.                | 男の人が鳥を食べます。
+
+	Cluster  16
+i did not do it.                         | 僕はしていません。
+the garden is at the front of the house. | 庭が家の前方です。
+she had opened the door.                 | 彼女はドアを開けてしまってた。
+there are over fifty newspapers.         | 五十部以上新聞紙があります。
+the third book is long.                  | 三つの本が長いです。
+the man has a military coat.             | 男は軍事用のコートを持っています。
+there are children in the streets.       | 道路に子供たちはいます。
+you sign the document.                   | あなたが書面にサインをします。
+the car needs more gas.                  | 車はよりガソリンを必要とします。
+does the hat belong to you?              | 帽子はあなたのもの？

@@ -15,7 +15,7 @@ def create_bitext(map_file, prompts_file, translations_file, source_output_file,
     with open(translations_file, encoding='utf-8') as data_file:
         translations = [x.strip("\n") for x in data_file.readlines()]
 
-    for mapping in mappings[:220]:
+    for mapping in mappings:
         prompt_index = mapping["prompt"]
         translation_index = mapping["trans"]
         sc = mapping["code"]

@@ -2,10 +2,14 @@ import nltk
 from nltk.util import ngrams
 import argparse
 from scipy.stats.mstats import gmean
+from nltk.corpus import stopwords
+import math
+from utils import read_transfile
+nltk.download('stopwords')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--trans_file', help="list of outputs of model translation")
-parser.add_argument('--ref_file', help="reference translation")
+parser.add_argument("--goldfile", help="gold file", required=False)
+parser.add_argument("--predfile", help="pred file", required=False)
 args = parser.parse_args()
 
 #counts the number of ngrams in a sentence
@@ -49,10 +53,10 @@ def modified_precision(sent,comp_sent,ngram_size):
   
 def pairwise_BLEU(curr_sent,comp_sent):
   mod_prec_list = []
-  for n in [1,2,3,4]:
+  for n in [1,2]:
     mod_prec = modified_precision(curr_sent,comp_sent,n)
     mod_prec_list.append(mod_prec)
-  print(mod_prec_list)
+    #print(mod_prec_list)
   pw_BLEU = gmean(mod_prec_list)
   return pw_BLEU
     
@@ -73,16 +77,24 @@ def discrepancy_score(sent_set):
     DP_score = score_factor * sum(score_per_sent)
     return DP_score
 
-
 def main():
-      with open(args.trans_file, 'r') as f_trans, \
-         open(args.ref_file, 'r') as f_ref:
-             trans_data = f_trans.read().splitlines()
-             ref_data = f_ref.read().splitlines()
-             
-             total_trans_set = trans_data + ref_data
-             
-             print(discrepancy_score(total_trans_set))
+  #with open(args.goldfile) as f:
+    #print("reading gold")
+   # gold = read_transfile(f.readlines())
+
+  with open(args.predfile) as f:
+    print("reading pred")
+    pred = read_transfile(f.readlines())
+
+  dp_score_list = []
+  for k, d in pred.items():
+    trans_set = list(d.keys())
+    print(trans_set)
+    dp_score = round(discrepancy_score(trans_set),ndigits=4)
+    dp_score_list.append(dp_score)
+
+  for score in dp_score_list:
+    print(score)
 
 if __name__ == "__main__":
   main()
